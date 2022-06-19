@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
         - name: simple-html
-          image: ipegii/kube-project:1.1.2
+          image: ipegii/kube-project:1.1.3
