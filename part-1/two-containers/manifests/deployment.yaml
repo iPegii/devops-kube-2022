@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: two-container
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: two-container
+  template:
+    metadata:
+      labels:
+        app: two-container
+    spec:
+      volumes: # Define volume
+          - name: shared-image
+            emptyDir: {}
+      containers:
+        - name: file-generator
+          image: ipegii/kube-project-file-generator:0.1.0
+          volumeMounts: # Mount volume
+          - name: shared-image
+            mountPath: /usr/src/app/files
+        - name: file-reader
+          image: ipegii/kube-project-file-reader:0.1.0
+          volumeMounts: # Mount volume
+          - name: shared-image
+            mountPath: /usr/src/app/files
