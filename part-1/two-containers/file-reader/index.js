@@ -40,7 +40,7 @@ const readFile = async()=> {
     console.log(`Line from file: ${line}`);
     var hashText = ""
     const hash = createHash('sha256');
-    hashText = hash.update('I love cupcakes')
+    hashText = hash.update(line)
     .digest('hex');
     htmlTextTemplate = "<div>---<p>"+ line +"</p><p>"+ hashText +"</p>---</div>" 
     htmlBody = htmlBody.concat(htmlTextTemplate + "\r\n")
