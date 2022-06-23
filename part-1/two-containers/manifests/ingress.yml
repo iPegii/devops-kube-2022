@@ -1,10 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: two-container-ingress
+  name: ingress-wildcard-host
 spec:
   rules:
-  - http:
+   - http:
+      paths:
+      - path: /pingpong
+        pathType: Prefix
+        backend:
+          service:
+            name: pingpong-svc
+            port:
+              number: 80
+   - http:
       paths:
       - path: /
         pathType: Prefix
@@ -12,4 +21,4 @@ spec:
           service:
             name: two-container-svc
             port:
-              number: 2345
+              number: 80

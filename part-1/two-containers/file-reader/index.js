@@ -33,18 +33,25 @@ const readFile = async()=> {
   const {
     createHash
   } = await import('node:crypto');
-  var fullText = ""
+  var fullText = "<div><h1>This is a random string with date and hash</h1>" + htmlBody + "</div>"
   var htmlBody = ""
   const allFileContents = fs.readFileSync(filePath, 'utf-8');
+  lineCounter = 0
   allFileContents.split(/\r?\n/).forEach(line =>  {
     console.log(`Line from file: ${line}`);
+    if(lineCounter === 0) {
     var hashText = ""
     const hash = createHash('sha256');
     hashText = hash.update(line)
     .digest('hex');
     htmlTextTemplate = "<div>---<p>"+ line +"</p><p>"+ hashText +"</p>---</div>" 
     htmlBody = htmlBody.concat(htmlTextTemplate + "\r\n")
-    fullText = "<div><h1>This is a random string with date and hash</h1>" + htmlBody + "</div>"
+    fullText = fullText.concat(htmlBody)
+    counter = 1
+    } else {
+      fullText = fullText.concat("<div><p>" + line + "</p></div>")
+      counter = 0
+    }
   })
   return fullText
 }
@@ -55,14 +62,14 @@ router.get("hello", "/", async(ctx,next) => {
   ctx.status = HttpStatus.OK;
   await next();
 });
-
+/*
 router.get("pingpong", "/pingpong", async(ctx,next) => {
   ctx.status = HttpStatus.OK;
   counter = counter + 1
   ctx.body = "<div><h1>Ping pong</h1><p>"+ counter +"</p></div>";
   await next();
 });
-
+*/
 app.use(router.routes()).use(router.allowedMethods());
 
 const PORT = process.env.PORT || 3000;
