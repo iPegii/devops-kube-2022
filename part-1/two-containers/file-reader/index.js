@@ -62,14 +62,7 @@ router.get("hello", "/", async(ctx,next) => {
   ctx.status = HttpStatus.OK;
   await next();
 });
-/*
-router.get("pingpong", "/pingpong", async(ctx,next) => {
-  ctx.status = HttpStatus.OK;
-  counter = counter + 1
-  ctx.body = "<div><h1>Ping pong</h1><p>"+ counter +"</p></div>";
-  await next();
-});
-*/
+
 app.use(router.routes()).use(router.allowedMethods());
 
 const PORT = process.env.PORT || 3000;

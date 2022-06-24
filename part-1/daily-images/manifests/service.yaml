@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-fetch-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: two-container
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 3000
