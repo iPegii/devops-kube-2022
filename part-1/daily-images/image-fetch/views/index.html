@@ -1,4 +1,16 @@
 <div>
-    <h1>This is a simple HTML page</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <h1>This is the image of the day</h1>
+    <img src="/get-image" height="400" width="200" alt="daily image"></img>
+    <form action="/send-todo">
+        <input></input>
+        <button type="submit">Create Todo</button>
+    </form>
+    <ul>
+        <% todos.forEach(todo => { %>
+            <li>
+              <%= todo %>  
+            </li>
+
+        <%}) %>
+    </ul>
 </div>

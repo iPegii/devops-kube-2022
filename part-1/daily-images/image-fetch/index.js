@@ -1,30 +1,24 @@
 const Koa = require('koa');
 const render = require('koa-ejs');
 const Router = require("koa-router");
-const BodyParser = require("koa-bodyparser");
-const Logger = require("koa-logger");
-const cors = require('koa-cors');
 const HttpStatus = require("http-status");
 const path = require('path');
 fs = require('fs');
-const mount = require('koa-mount')
 var serve = require('koa-static');
 const mime = require('mime-types')
 
 const app = new Koa();
 const router = new Router();
 
-app.use(BodyParser());
-app.use(Logger());
-app.use(cors());
-
 render(app, {
     root: path.join(__dirname, 'views'),
-    layout: 'index',
+    layout: 'layout',
     viewExt: 'html',
     cache: false,
     debug: true
   });
+
+const todos = ["Make a nice website", "Learn Kubernetes", "Be fast", "Just do it"]
 
 const directory = path.join('/', 'usr', 'src', 'app', 'files')
 const filePath = path.join(directory, 'daily_image.jpg')
@@ -39,10 +33,8 @@ router.get("get-image", "/get-image", async(ctx) => {
 ctx.status = 200
 })
 
-router.get("hello", "/", async(ctx,next) => {
-  ctx.body = `<div><h1>This is the image of the day</h1><img src="/get-image" alt="daily image"></img></div>`
-  ctx.status = HttpStatus.OK;
-  await next();
+router.get("hello", "/", async(ctx) => {
+  await ctx.render('index', {todos: todos})
 });
 app.use(serve(path.join(__dirname, filePath)))
 app.use(router.routes()).use(router.allowedMethods());

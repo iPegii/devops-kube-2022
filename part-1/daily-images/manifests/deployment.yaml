@@ -23,7 +23,7 @@ spec:
           - name: shared-image
             mountPath: /usr/src/app/files
         - name: image-fetch
-          image: ipegii/kube-project-image-fetch:0.1.8
+          image: ipegii/kube-project-image-fetch:0.2.3
           volumeMounts: # Mount volume
           - name: shared-image
             mountPath: /usr/src/app/files
