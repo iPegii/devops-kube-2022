@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: two-container
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: two-container
+  template:
+    metadata:
+      labels:
+        app: two-container
+    spec:
+     # volumes: # Define volume
+     #     - name: shared-image
+     #       persistentVolumeClaim:
+     #         claimName: image-claim
+      containers:
+        - name: file-serve
+          image: ipegii/kube-project-file-serve:0.0.7
+   #       volumeMounts: # Mount volume
+   #       - name: shared-image
+   #         mountPath: /usr/src/app/files
+        - name: file-fetch
+          image: ipegii/kube-project-file-fetch:0.0.8
+   #       volumeMounts: # Mount volume
+   #       - name: shared-image
+   #         mountPath: /usr/src/app/files
