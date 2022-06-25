@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: two-container-persistent-volume
+  name: kube-project-persistent-volume
 spec:
   storageClassName: manual
   capacity:

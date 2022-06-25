@@ -5,9 +5,11 @@ const HttpStatus = require("http-status");
 const path = require('path');
 fs = require('fs');
 const axios = require('axios')
+const bodyParser = require('koa-bodyparser')
 
 const app = new Koa();
 const router = new Router();
+app.use(bodyParser())
 
 
 const directory = path.join('/', 'usr', 'src', 'app', 'files')
@@ -43,6 +45,8 @@ const fetchDailyImage = async() => {
 
 fetchDailyImage()
 
+var todos = ["Make a nice website", "Learn Kubernetes", "Be fast", "Just do it"]
+
 render(app, {
     root: path.join(__dirname, 'views'),
     layout: 'index',
@@ -56,6 +60,18 @@ router.get("hello", "/", async(ctx,next) => {
     ctx.status = HttpStatus.OK;
     await next();
 });
+
+router.post("add todos", "/todos", async(ctx) => {
+  const data = ctx.request.body
+  todos = todos.concat(data.todo)
+  ctx.status = 200
+})
+  
+router.get("get todos", "/todos", async(ctx) => {
+  console.log('get todos: ', todos)
+  ctx.body = todos;
+  ctx.status = 200
+})
 
 app.use(router.routes()).use(router.allowedMethods());
 

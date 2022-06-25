@@ -1,16 +1,16 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-wildcard-host
+  name: kube-project-ingress
 spec:
   rules:
    - http:
       paths:
-      - path: /pingpong
+      - path: /backend
         pathType: Prefix
         backend:
           service:
-            name: image-gen-svc
+            name: backend-svc
             port:
               number: 80
    - http:
@@ -19,6 +19,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: image-fetch-svc
+            name: frontend-svc
             port:
               number: 80
