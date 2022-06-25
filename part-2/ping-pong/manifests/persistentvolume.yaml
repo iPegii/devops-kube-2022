@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
+  namespace: exercise-namespace
   name: two-container-persistent-volume
 spec:
   storageClassName: manual

@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: exercise-namespace
   name: two-container
 spec:
   replicas: 1
