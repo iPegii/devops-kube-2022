@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
+  namespace: project-namespace
   name: kube-project-persistent-volume
 spec:
   storageClassName: manual

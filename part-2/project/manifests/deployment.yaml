@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: project-namespace
   name: kube-project
 spec:
   replicas: 1
