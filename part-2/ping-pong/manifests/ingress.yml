@@ -11,7 +11,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: pingpong-svc
+            name: exercise-back-svc
             port:
               number: 80
    - http:
@@ -20,6 +20,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: two-container-svc
+            name: exercise-front-svc
             port:
               number: 80

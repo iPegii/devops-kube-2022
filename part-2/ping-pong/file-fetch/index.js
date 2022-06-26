@@ -62,16 +62,16 @@ const createLogOutput = (pingpongs) => {
   var today = new Date();
   var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + "." + today.getMilliseconds();
-  return dateTime = date+' '+time + ": " + randomString + "\r\n" + "Ping / Pongs: " + pingpongs + "\r\n";
+  return dateTime = "<p>" + date+' '+time + ": " + randomString + "</p><p>" + "Ping / Pongs: " + pingpongs + "</p>";
 }
 
 
 
 router.get("hello", "/", async(ctx) => {
   console.log('fetching')
-  const pingPongs = await axios.get("http://pingpong-svc/get-pingpongs")
+  const pingPongs = await axios.get("http://exercise-back-svc/get-pingpongs")
   console.log(pingPongs)
-  ctx.body = "<div><h1>This is amount of ping pongs on the server</h1><p>" + createLogOutput(pingPongs.data) + "</p></div>"
+  ctx.body = "<div><h1>This is amount of ping pongs on the server</h1><p>" + process.env.MESSAGE + "</p>" + createLogOutput(pingPongs.data) + "</div>"
   ctx.status = HttpStatus.OK;
 });
 

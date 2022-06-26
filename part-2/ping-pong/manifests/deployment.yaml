@@ -2,18 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: exercise-namespace
-  name: two-container
+  name: exercise-container
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: two-container
+      app: exercise-container
   template:
     metadata:
       labels:
-        app: two-container
+        app: exercise-container
     spec:
-     # volumes: # Define volume
+      volumes: # Define volume
+        - name: config-volume
+          configMap:
+            name: exercise-configmap
      #     - name: shared-image
      #       persistentVolumeClaim:
      #         claimName: image-claim
@@ -24,7 +27,13 @@ spec:
    #       - name: shared-image
    #         mountPath: /usr/src/app/files
         - name: file-fetch
-          image: ipegii/kube-project-file-fetch:0.0.8
+          image: ipegii/kube-project-file-fetch:0.1.3
+          env:
+          - name: MESSAGE
+            valueFrom:
+              configMapKeyRef:
+                name: exercise-configmap
+                key: MESSAGE
    #       volumeMounts: # Mount volume
    #       - name: shared-image
    #         mountPath: /usr/src/app/files
