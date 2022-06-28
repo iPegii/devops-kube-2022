@@ -70,7 +70,6 @@ const createLogOutput = (pingpongs) => {
 router.get("hello", "/", async(ctx) => {
   console.log('fetching')
   const pingPongs = await axios.get("http://exercise-back-svc/get-pingpongs")
-  console.log(pingPongs)
   ctx.body = "<div><h1>This is amount of ping pongs on the server</h1><p>" + process.env.MESSAGE + "</p>" + createLogOutput(pingPongs.data) + "</div>"
   ctx.status = HttpStatus.OK;
 });

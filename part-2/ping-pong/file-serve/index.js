@@ -9,6 +9,7 @@ const mount = require("koa-mount");
 const HttpStatus = require("http-status");
 const path = require('path');
 fs = require('fs');
+const Pool = require('pg').Pool
 
 const app = new Koa();
 const router = new Router();
@@ -66,9 +67,35 @@ console.log('generator-read-old: ', numberOfPingPongs)
   return numberOfPingPongs
 }
 */
-var counter = 0
 
 //generateAndLoopString()
+const connectionString = `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@postgres-svc:5432/${process.env.POSTGRES_DB}`
+
+const pool = new Pool({
+  connectionString
+});
+
+const initializeDatabase = async() => {
+  const client = await pool.connect()
+  try {
+    const result = await client.query('CREATE TABLE IF NOT EXISTS pingpong (id serial PRIMARY KEY, counter INT NOT NULL);')
+  } catch(err) {
+    console.log("Error initializing database: ", err)
+  }
+  try {
+    const result = await client.query('SELECT EXISTS(SELECT 1 FROM pingpong WHERE id = 1);')
+    console.log("initDatabase: ", result)
+    if(result.rows[0]) {
+      try{
+      const result = await client.query('INSERT INTO pingpong(counter) VALUES (0);')
+      } catch(err) {
+        console.log("Error initializing database: ", err)
+      }
+    }
+  } catch(err) {
+    console.log("Error initializing database: ", err)
+  }
+}
 
 app.use(BodyParser());
 app.use(Logger());
@@ -81,6 +108,7 @@ render(app, {
     cache: false,
     debug: true
   });
+  initializeDatabase()
 
 router.get("hello", "/", async(ctx,next) => {
     ctx.body = "<div><h1>This page of no content</h1><p>Whoops.</p></div>";
@@ -89,16 +117,39 @@ router.get("hello", "/", async(ctx,next) => {
 });
 
 router.get("pingpong", "/pingpong", async(ctx,next) => {
-  ctx.status = HttpStatus.OK;
-  counter = counter + 1
-  ctx.body = "<div><h1>Ping pong</h1><p>"+ counter +"</p></div>";
-  await next();
+  const client = await pool.connect()
+  try {
+    const result = await client.query('SELECT counter FROM pingpong WHERE id=1;')
+    console.log(result)
+    var counter = result.rows[0].counter
+    ctx.status = HttpStatus.OK
+    counter = counter + 1
+    try{
+      const result = await client.query('UPDATE pingpong SET counter = $1 WHERE id=1 RETURNING *',[counter])
+      console.log(result)
+      } catch(err) {
+        console.log("Error increasing pongs: ", err)
+      }
+    ctx.body = "<div><h1>Ping pong</h1><p>"+ counter +"</p></div>";
+  } catch(err) {
+    console.log("error retrieving counter before increasing: ", err)
+    ctx.status = HttpStatus.NOT_FOUND
+    ctx.body = "Not found"
+  }
 });
 
 router.get("get pingpong", "/get-pingpongs", async(ctx,next) => {
-  ctx.status = HttpStatus.OK;
-  ctx.body = counter;
-  await next();
+  const client = await pool.connect()
+  try {
+    const result = await client.query('SELECT counter FROM pingpong WHERE id=1;')
+    console.log(result)
+    ctx.status = HttpStatus.OK
+    ctx.body = result.rows[0].counter
+  } catch(err) {
+    console.log("error in /get-pingpong", err)
+    ctx.status = HttpStatus.NOT_FOUND
+    ctx.body = "Not found"
+  }
 });
 
 app.use(router.routes()).use(router.allowedMethods());

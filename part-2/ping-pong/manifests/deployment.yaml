@@ -2,16 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: exercise-namespace
-  name: exercise-container
+  name: exercise-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: exercise-container
+      app: exercise-app
   template:
     metadata:
       labels:
-        app: exercise-container
+        app: exercise-app
     spec:
       volumes: # Define volume
         - name: config-volume
@@ -22,12 +22,24 @@ spec:
      #         claimName: image-claim
       containers:
         - name: file-serve
-          image: ipegii/kube-project-file-serve:0.0.7
+          image: ipegii/kube-project-file-serve:0.3.7
+          envFrom:
+          - secretRef:
+              name: postgres-credentials
+          env:
+          - name: HOST
+            valueFrom:
+              configMapKeyRef:
+                name: exercise-configmap
+                key: HOST
    #       volumeMounts: # Mount volume
    #       - name: shared-image
    #         mountPath: /usr/src/app/files
         - name: file-fetch
-          image: ipegii/kube-project-file-fetch:0.1.3
+          image: ipegii/kube-project-file-fetch:0.1.5
+          envFrom:
+          - secretRef:
+              name: postgres-credentials
           env:
           - name: MESSAGE
             valueFrom:
