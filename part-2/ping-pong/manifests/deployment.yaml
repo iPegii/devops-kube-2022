@@ -22,7 +22,7 @@ spec:
      #         claimName: image-claim
       containers:
         - name: file-serve
-          image: ipegii/kube-project-file-serve:0.3.7
+          image: ipegii/kube-project-file-serve:0.4.4
           envFrom:
           - secretRef:
               name: postgres-credentials

@@ -79,18 +79,17 @@ const initializeDatabase = async() => {
   const client = await pool.connect()
   try {
     const result = await client.query('CREATE TABLE IF NOT EXISTS pingpong (id serial PRIMARY KEY, counter INT NOT NULL);')
+    client.release()
   } catch(err) {
     console.log("Error initializing database: ", err)
   }
   try {
     const result = await client.query('SELECT EXISTS(SELECT 1 FROM pingpong WHERE id = 1);')
+    client.release()
     console.log("initDatabase: ", result)
     if(result.rows[0]) {
-      try{
-      const result = await client.query('INSERT INTO pingpong(counter) VALUES (0);')
-      } catch(err) {
-        console.log("Error initializing database: ", err)
-      }
+      const result2 = await client.query('INSERT INTO pingpong(counter) VALUES (0);')
+      client.release()
     }
   } catch(err) {
     console.log("Error initializing database: ", err)
@@ -120,16 +119,14 @@ router.get("pingpong", "/pingpong", async(ctx,next) => {
   const client = await pool.connect()
   try {
     const result = await client.query('SELECT counter FROM pingpong WHERE id=1;')
+    client.release()
     console.log(result)
     var counter = result.rows[0].counter
     ctx.status = HttpStatus.OK
     counter = counter + 1
-    try{
-      const result = await client.query('UPDATE pingpong SET counter = $1 WHERE id=1 RETURNING *',[counter])
-      console.log(result)
-      } catch(err) {
-        console.log("Error increasing pongs: ", err)
-      }
+    const result2 = await cliet.query('UPDATE pingpong SET counter = $1 WHERE id=1 RETURNING *',[counter])
+    client.release()
+    console.log(result2)
     ctx.body = "<div><h1>Ping pong</h1><p>"+ counter +"</p></div>";
   } catch(err) {
     console.log("error retrieving counter before increasing: ", err)
@@ -142,6 +139,7 @@ router.get("get pingpong", "/get-pingpongs", async(ctx,next) => {
   const client = await pool.connect()
   try {
     const result = await client.query('SELECT counter FROM pingpong WHERE id=1;')
+    client.release()
     console.log(result)
     ctx.status = HttpStatus.OK
     ctx.body = result.rows[0].counter
