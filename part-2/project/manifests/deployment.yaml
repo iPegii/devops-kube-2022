@@ -17,9 +17,21 @@ spec:
           - name: shared-image
             persistentVolumeClaim:
               claimName: image-claim
+          - name: config-volume
+            configMap:
+              name: project-configmap
       containers:
         - name: backend
-          image: ipegii/kube-project-backend:0.1.7
+          image: ipegii/kube-project-backend:0.2.2
+          envFrom:
+          - secretRef:
+              name: postgres-credentials
+          env:
+          - name: HOST
+            valueFrom:
+              configMapKeyRef:
+                name: project-configmap
+                key: HOST
           volumeMounts: # Mount volume
           - name: shared-image
             mountPath: /usr/src/app/files

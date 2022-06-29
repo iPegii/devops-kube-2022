@@ -6,11 +6,28 @@ const path = require('path');
 fs = require('fs');
 const axios = require('axios')
 const bodyParser = require('koa-bodyparser')
+const Pool = require('pg').Pool
 
 const app = new Koa();
 const router = new Router();
 app.use(bodyParser())
 
+const connectionString = `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@postgres-svc:5432/${process.env.POSTGRES_DB}`
+
+const pool = new Pool({
+  connectionString
+});
+
+const initializeDatabase = async() => {
+  const client = await pool.connect()
+  try {
+    const result = await client.query('CREATE TABLE IF NOT EXISTS todos (id serial PRIMARY KEY, todo VARCHAR(140) NOT NULL);')
+    client.release()
+  } catch(err) {
+    console.log("Error initializing database: ", err)
+  }
+}
+initializeDatabase()
 
 const directory = path.join('/', 'usr', 'src', 'app', 'files')
 const imageFilePath = path.join(directory, 'daily_image.jpg')
@@ -62,15 +79,35 @@ router.get("hello", "/", async(ctx,next) => {
 });
 
 router.post("add todos", "/todos", async(ctx) => {
-  const data = ctx.request.body
-  todos = todos.concat(data.todo)
+  const data = ctx.request.body.todo
+  todos = todos.concat(data)
+  const client = await pool.connect()
+  try {
+    const result = await client.query('INSERT INTO todos(todo) VALUES ($1) RETURNING *', [data])
+    console.log(result)
+    client.release()
+  } catch(err) {
+    console.log("Error adding todo: ", err)
+  }
   ctx.status = 200
 })
   
 router.get("get todos", "/todos", async(ctx) => {
-  console.log('get todos: ', todos)
-  ctx.body = todos;
-  ctx.status = 200
+  const client = await pool.connect()
+  try {
+    const result = await client.query('SELECT todo FROM todos')
+    console.log(result)
+    const todos = result.rows.map(row => {
+      return row.todo
+    })
+    client.release()
+    ctx.body = todos;
+    ctx.status = 200
+  } catch(err) {
+    console.log("Error fetching todo: ", err)
+    ctx.body = "<div>Error fetching todos</div>";
+    ctx.status = 404
+  }
 })
 
 app.use(router.routes()).use(router.allowedMethods());
