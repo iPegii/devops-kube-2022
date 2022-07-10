@@ -22,7 +22,7 @@ spec:
               name: project-configmap
       containers:
         - name: backend
-          image: ipegii/kube-project-backend:0.2.2
+          image: ipegii/kube-project-backend:0.2.4
           envFrom:
           - secretRef:
               name: postgres-credentials
@@ -36,7 +36,7 @@ spec:
           - name: shared-image
             mountPath: /usr/src/app/files
         - name: frontend
-          image: ipegii/kube-project-frontend:0.1.9
+          image: ipegii/kube-project-frontend:0.2.1
           volumeMounts: # Mount volume
           - name: shared-image
             mountPath: /usr/src/app/files

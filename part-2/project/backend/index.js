@@ -80,16 +80,22 @@ router.get("hello", "/", async(ctx,next) => {
 
 router.post("add todos", "/todos", async(ctx) => {
   const data = ctx.request.body.todo
+  console.log("todo sent to backend: ", ctx.request)
+  console.log("length: ", data.length)
   todos = todos.concat(data)
+  if(data.length > 140) {
+    ctx.status = 400
+  } else {
   const client = await pool.connect()
   try {
     const result = await client.query('INSERT INTO todos(todo) VALUES ($1) RETURNING *', [data])
-    console.log(result)
+    console.log("Todo inserted to backend: ", result)
     client.release()
   } catch(err) {
     console.log("Error adding todo: ", err)
   }
   ctx.status = 200
+}
 })
   
 router.get("get todos", "/todos", async(ctx) => {
